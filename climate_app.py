@@ -97,13 +97,14 @@ def tobs_range(start,end):
 
 @app.route("/api/v1.0/date/<start>")
 def tobs_date(start):
-@property
-def calculated_date(self):
-    return Measurement.date(self.year, self.month, self.day)
+# @property
+# def calculated_date(self):
+#     return Measurement.date(self.year, self.month, self.day)
 
     session=Session(engine)
+    print(start)
     results=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).\
-        filter(Measurement.calculated_date>start)).all()
+        filter(Measurement.date>start)).all()
     session.close()
     
     return str(results)
