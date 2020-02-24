@@ -3,11 +3,11 @@ import numpy as np
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, DATE,cast
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from flask import Flask, jsonify
-from datetime import datetime
+from datetime import datetime,date
 
 
 #################################################
@@ -39,8 +39,11 @@ def welcome():
     """Available routes"""
     return(
         f"/api/v1.0/precipitation:<br/>"
-        f"/api/v1.0/tobs"
+        f"/api/v1.0/tobs:<br/>"
         f"/api/v1.0/stations:<br/>"
+        f"/api/v1.0/range/<start>/<end>:<br/>"
+        f"/api/v1.0/date/<start>"
+
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -85,8 +88,8 @@ def tobs_range(start,end):
     session=Session(engine)
     results=session.query(func.min(Measurement.tobs),
     func.avg(Measurement.tobs),
-    func.max(Measurement.tobs).\
-        filter(Measurement.date>=start,Measurement.date<=end)).first()
+    func.max(Measurement.tobs)).\
+        filter(Measurement.date>=start,Measurement.date<=end).first()
     session.close()
     
     return str(results)
@@ -102,9 +105,9 @@ def tobs_date(start):
 #     return Measurement.date(self.year, self.month, self.day)
 
     session=Session(engine)
-    print(start)
-    results=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).\
-        filter(Measurement.date>start)).all()
+    #print(start)
+    results=session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).\
+        filter(Measurement.date >start).all()
     session.close()
     
     return str(results)
